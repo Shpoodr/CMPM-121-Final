@@ -1,19 +1,17 @@
 # CMPM-121-Final
 Devlog Entry - [11/14/2025]
 
-Introducing the team
+## Introducing the team
 
-(Tell us who is on the team and what roles they will be taking on. Remember, one person can cover up to two roles if your team is small.)
+Tools Lead: Logan Marshall
 
-Tools Lead: [Name(s) - Describe responsibilities and goals]
+Engine Lead: Jayson Boyanitch
 
-Engine Lead: [Name(s) - Describe responsibilities and goals]
+Design Lead: Gabriel Groenwold
 
-Design Lead: [Name(s) - Describe responsibilities and goals]
+Testing Lead: Andrew Hernandez
 
-Testing Lead: [Name(s) - Describe responsibilities and goals]
-
-Tools and materials
+## Tools and materials
 
 Engine
 
