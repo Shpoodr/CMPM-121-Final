@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@enable3d/phaser-extension": "^0.25.4",
+    "matter-js": "^0.20.0",
     "phaser": "^3.60.0",
     "three": "^0.154.0"
   },
