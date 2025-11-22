@@ -20,9 +20,14 @@ export class MainScene extends Scene3D {
       const chip = gltf.scene;
 
       chip.scale.set(1, 1, 1);      // Make it 2x bigger
-      chip.position.set(9, 2, 0);   // Drop it from height of 5
+      chip.position.set(9, 3, 0);   // Drop it from height of 5
       this.third.add.existing(chip);
-      this.third.physics.add.existing(chip, { shape: 'convex'});
+      this.third.physics.add.existing(chip, { 
+        shape: 'box',
+        height: 2.5,
+        width: 1.6,
+        depth: 1.6
+      });
     })
 
     this.third.load.gltf('src/assets/cube.glb').then((gltf) => {
@@ -43,10 +48,13 @@ export class MainScene extends Scene3D {
       const flag = gltf.scene;
 
       flag.scale.set(1, 1, 1);      // Make it 2x bigger
-      flag.position.set(-9, 1, 0);   // Drop it from height of 5
+      flag.position.set(-9, 5.5, 0);   // Drop it from height of 5
       this.third.add.existing(flag);
       this.third.physics.add.existing(flag, { 
-        shape: 'convex',
+        shape: 'box',
+        width: 1.2,
+        depth: 1.2,
+        height: 7.6
       });
     })
 
