@@ -21,19 +21,16 @@ export class MainScene extends Scene3D {
     this.third.load.gltf('src/assets/chip.glb').then((gltf) => {
       const chip = gltf.scene;
 
-      chip.scale.set(1, 1, 1);      // Make it 2x bigger  
-      chip.position.set(9, 2, 0);   // Drop it from height of 5
-      chip.rotation.y = Math.PI;    // Fliped the player to face the camera
-      this.third.add.existing(chip); 
-      
-      this.third.physics.add.existing(chip, { shape: 'convex', mass: 1 });
-
-      // Initializes the Player Controller
-      this.player = new Player(this, chip);
-      
-      // Makes the camera follow the player
-      this.third.camera.lookAt(chip.position);
-    });
+      chip.scale.set(1, 1, 1);      // Make it 2x bigger
+      chip.position.set(9, 3, 0);   // Drop it from height of 5
+      this.third.add.existing(chip);
+      this.third.physics.add.existing(chip, { 
+        shape: 'box',
+        height: 2.5,
+        width: 1.6,
+        depth: 1.6
+      });
+    })
 
     this.third.load.gltf('src/assets/cube.glb').then((gltf) => {
       const helper = gltf.scene;
@@ -50,11 +47,15 @@ export class MainScene extends Scene3D {
 
     this.third.load.gltf('src/assets/flag.glb').then((gltf) => {
       const flag = gltf.scene;
-      flag.scale.set(1, 1, 1);     
-      flag.position.set(-9, 1, 0);  
+
+      flag.scale.set(1, 1, 1);      // Make it 2x bigger
+      flag.position.set(-9, 5.5, 0);   // Drop it from height of 5
       this.third.add.existing(flag);
       this.third.physics.add.existing(flag, { 
-        shape: 'convex',
+        shape: 'box',
+        width: 1.2,
+        depth: 1.2,
+        height: 7.6
       });
     });
 
