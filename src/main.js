@@ -24,12 +24,17 @@ export class MainScene extends Scene3D {
       chip.scale.set(1, 1, 1);      // Make it 2x bigger
       chip.position.set(9, 3, 0);   // Drop it from height of 5
       this.third.add.existing(chip);
+      chip.rotation.y = Math.PI;    // Fliped the player to face the camera
+      this.third.add.existing(chip); 
       this.third.physics.add.existing(chip, { 
         shape: 'box',
         height: 2.5,
         width: 1.6,
         depth: 1.6
       });
+
+      this.player = new Player(this, chip);
+      this.third.camera.lookAt(chip.position);
     })
 
     this.third.load.gltf('src/assets/cube.glb').then((gltf) => {
