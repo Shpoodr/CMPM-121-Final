@@ -12,7 +12,7 @@ export class Player {
       a: scene.input.keyboard.addKey('a'),
       s: scene.input.keyboard.addKey('s'),
       d: scene.input.keyboard.addKey('d'),
-      space: scene.input.keyboard.addKey('space')
+      space: scene.input.keyboard.addKey('space'),
     };
 
     // 2. Locks the rotation so the player doesn't roll around like a ball
