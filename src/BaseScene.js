@@ -22,7 +22,7 @@ export class BaseScene extends Scene3D {
 
   preload() {
     //assets that will be commmon to all levels
-    this.third.load.preload('chip', 'src/assets/chip.glb');
+    this.third.load.preload('chip', 'assets/chip.glb');
   }
 
   async create() {

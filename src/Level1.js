@@ -9,9 +9,9 @@ export class Level1 extends BaseScene {
   preload() {
     super.preload();
 
-    this.third.load.preload('cube', 'src/assets/cube.glb');
-    this.third.load.preload('flag', 'src/assets/flag.glb');
-    this.third.load.preload('platform', 'src/assets/platform.glb');
+    this.third.load.preload('cube', 'assets/cube.glb');
+    this.third.load.preload('flag', 'assets/flag.glb');
+    this.third.load.preload('platform', 'assets/platform.glb');
   }
 
   // 2. NEW: Async Create allows us to wait for objects to exist before moving on
