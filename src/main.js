@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { enable3d, Canvas } from '@enable3d/phaser-extension';
 import { Level1 } from './Level1';
+import { Level2 } from './Level2';
 
 const config = {
   type: Phaser.WEBGL,
@@ -17,7 +18,7 @@ const config = {
     },
     debug: true,
   },
-  scene: [Level1],
+  scene: [Level1 , Level2],
   ...Canvas(),
 };
 

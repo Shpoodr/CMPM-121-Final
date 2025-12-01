@@ -24,7 +24,7 @@ export class Player {
     if (!this.object || !this.object.body) return;
 
     // Movement settings
-    const speed = 6;
+    const speed = 5;
     const jumpForce = 7; // This is enough to jump on the box while 6 is not enough
 
     // Gets the current velocity to preserve gravity (y-axis)

@@ -1,15 +1,15 @@
 import { BaseScene } from './BaseScene';
 
-export class Level1 extends BaseScene {
+export class Level2 extends BaseScene {
   constructor() {
-    super('Level1');
+    super('Level2');
   }
 
   // 1. NEW: Preload assets to ensure they are cached for fast reloading
   preload() {
     super.preload();
 
-    this.third.load.preload('cube', 'assets/cube.glb');
+    this.third.load.preload('small', 'assets/small-platform.glb');
     this.third.load.preload('flag', 'assets/flag.glb');
     this.third.load.preload('platform', 'assets/platform.glb');
     this.third.load.preload('key', 'assets/key.glb')
@@ -19,7 +19,6 @@ export class Level1 extends BaseScene {
   async createLevel() {
     //start with environment setup
     this.warpSpeed('-ground');
-    this.player = super.player
 
     //define player start position for base scene
     this.startPosition = { x: 11, y: 3, z: 0 };
@@ -36,55 +35,9 @@ export class Level1 extends BaseScene {
 
     //loading level objects
     await this.loadStaticLevel();
-    await this.spawnCube();
-    await this.spawnKey();
   }
 
   // --- SPAWN FUNCTIONS (Refactored to Async) ---
-
-  async spawnKey() {
-    const keyGltf = await this.third.load.gltf('key');
-    const key = keyGltf.scene.clone();
-
-    key.scale.set(1, 1, 1);
-    key.position.set(8, 9.5, 0);
-
-    this.third.add.existing(key);
-    this.third.physics.add.existing(key, {
-      shape: 'box',
-      width: 0.5,
-      depth: 0.5,
-      height: 2,
-      mass: 0,
-    });
-
-    key.userData = {isInteractable: true}
-    this.key = key
-  }
-
-  async spawnCube() {
-    const gltf = await this.third.load.gltf('cube');
-    const helper = gltf.scene.clone();
-
-    helper.scale.set(1, 1, 1);
-    helper.position.set(8, 2, 0);
-
-    this.third.add.existing(helper);
-    this.third.physics.add.existing(helper, {
-      shape: 'box',
-      width: 2,
-      depth: 2,
-      height: 2,
-      mass: 5,
-    });
-
-    this.helper = helper;
-
-    // Collision with Floor
-    this.third.physics.add.collider(this.helper, this.floor, () => {
-      this.displayEndScreen('GAME OVER', '#ff0000');
-    });
-  }
 
   async loadStaticLevel() {
     // Flag
@@ -118,7 +71,23 @@ export class Level1 extends BaseScene {
       });
     };
 
-    await spawnPlat(8);
+    const spawnSmall = async (x) => {
+      const smallGlft = await this.third.load.gltf('small');
+      const s = smallGlft.scene.clone();
+      s.scale.set(1, 1, 1);
+      s.position.set(x, 1, 0);
+      this.third.add.existing(s);
+      this.third.physics.add.existing(s, {
+        shape: 'box',
+        width: 2,
+        height: 2,
+        depth: 2,
+        mass: 0,
+      });
+    };
+
+    await spawnSmall(0)
+    await spawnPlat(9);
     await spawnPlat(-9);
   }
 }
