@@ -34,3 +34,25 @@ To start, we used the Phaser3 framework as a base engine, which does not have 3d
 ### Reflection
 
 We stayed pretty loyal to our original goal. Everybody stayed true to their roles for the most part, except Jayson and Andrew blended their duties together at times. The frameworks were difficult to use due to the complicated nature of making sure all the different plugins worked together. It's hard to say whether we should've used different engines, because we haven't used any other frameworks that supported 3d game develpment. However, the 3d capabilities of the framework did feel somewhat disjointed, which makes us interested in shopping around for other frameworks that perhaps had 3d capabilities in mind as the main focus, rather than as a plugin.
+
+## Devlog Entry - [12/01/2025]
+
+### How We Satisfied The Software Requirements
+
+3D Rendering & Physics: We maintained our Phaser and enable3d stack. main.js initializes the Ammo.js physics engine with standard gravity, ensuring all game objects interact physically.
+
+Navigation: Movement between rooms is handled by our shared BaseScene class. Reaching the flag triggers this.scene.start('Level2'), allowing for easy scalability.
+
+Interaction: We implemented a 3D raycasting system in BaseScene.js. Clicking projects a ray from the camera; intersecting objects tagged isInteractable (like keys) trigger collection logic.
+
+Inventory: We used Phaser’s registry for state persistence. Collected items are stored globally, allowing Level1 logic to verify if the player has the 'key' before granting a win.
+
+Physics Puzzle: Level1 includes a mass-based puzzle. The player (mass 1) must manipulate a helper cube (mass 5) using physics collisions to reach higher platforms.
+
+Skill & Reasoning: Success requires exploring to find the hidden key (reasoning) and precise platforming (skill). Reaching the goal without the key triggers a "NO KEY FOUND" failure state.
+
+Conclusive Ending: We implemented a clear displayEndScreen method. Meeting win conditions displays "YOU WIN!", while falling off the map shows "GAME OVER," both offering a restart click.
+
+### Reflection
+
+We significantly refactored our plan to prioritize the DRY principle. Instead of duplicating logic, we moved player movement, UI, and input handling into a parent BaseScene class, leaving child scenes (Level1, Level2) responsible only for asset placement. We also applied the Rule of 3 by creating helper functions like spawnPlat to generate level geometry programmatically rather than hard-coding coordinates.
