@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { enable3d, Canvas, Scene3D, THREE } from '@enable3d/phaser-extension';
+import { enable3d, Scene3D, THREE } from '@enable3d/phaser-extension';
 import { Player } from './Player';
 
 export class BaseScene extends Scene3D {
@@ -26,7 +26,6 @@ export class BaseScene extends Scene3D {
   }
 
   async create() {
-    this.third.physics.debug?.enable();
     this.isGameOver = false;
 
     //setup the ui elements
@@ -47,7 +46,7 @@ export class BaseScene extends Scene3D {
 
   //this will be used by the child classes that create different levels
   async createLevel() {
-    console.warn('creatLevel() should be overridden by the child scene');
+    console.warn('createLevel() should be overridden by the child scene');
   }
 
   // --- Player spawn function based on scene specific location ---
@@ -90,15 +89,28 @@ export class BaseScene extends Scene3D {
       this.player.update();
       this.third.camera.lookAt(this.player.object.position);
 
-      /*// WIN CONDITION
+      // WIN / LEVEL LOGIC
       if (this.flag) {
         const dist = this.player.object.position.distanceTo(this.flag.position);
+        
         if (dist < 2.5) {
-          this.displayEndScreen('YOU WIN!', '#00ff00');
+           // Takes us to level 2
+           if (this.scene.key === 'Level1') {
+             this.scene.start('Level2'); 
+           } 
+           // Check for the key
+           else {
+             if (this.inventory.includes('key')) {
+                // WIN: Go back to Level 1 to restart the whole loop
+                this.displayEndScreen('YOU WIN!', '#00ff00', 'Level1');
+             } else {
+                // FAIL: Go back to Level 1 because you missed the key
+                this.displayEndScreen('NO KEY FOUND', '#ff0000', 'Level1');
+             }
+           }
         }
-      }*/
+      }
 
-      // Fallback: If player falls into void
       if (this.player.object.position.y < -30) {
         this.displayEndScreen('GAME OVER', '#ff0000');
       }
@@ -110,8 +122,8 @@ export class BaseScene extends Scene3D {
     if (this.isGameOver) return;
     //calculate the mouse position
     const mouse = new THREE.Vector2();
-    mouse.x = (pointer.x / this.cameras.main.width) * 2 - 1;
-    mouse.y = -(pointer.y / this.cameras.main.height) * 2 + 1;
+    mouse.x = (pointer.x / this.scale.width) * 2 - 1;
+    mouse.y = -(pointer.y / this.scale.height) * 2 + 1;
 
     //raycast from camera to mouse
     const raycaster = new THREE.Raycaster();
@@ -121,16 +133,18 @@ export class BaseScene extends Scene3D {
     const intersects = raycaster.intersectObjects(this.third.scene.children, true);
 
     if (intersects.length > 0) {
-      intersects.forEach((hit) => {
+        const hit = intersects[0];
         const object = hit.object;
 
         //distance check so you can interact objects across map
         if (hit.distance < 20) {
-          if (object.userData.isInteractable) {
-            this.interactWith(object);
-          }
+            if (object.userData.isInteractable) {
+                this.interactWith(object);
+            } 
+            else if (object.parent && object.parent.userData.isInteractable) {
+                this.interactWith(object.parent);
+            }
         }
-      });
     }
   }
 
@@ -170,8 +184,7 @@ export class BaseScene extends Scene3D {
   }
 
   // --- UI & RESET LOGIC ---
-
-  displayEndScreen(text, color) {
+  displayEndScreen(text, color, targetScene = null) {
     if (this.isGameOver) return;
     this.isGameOver = true;
 
@@ -200,20 +213,23 @@ export class BaseScene extends Scene3D {
     this.uiElements.push(t1, t2);
 
     this.input.once('pointerdown', () => {
-      this.resetLevel();
+      this.resetLevel(targetScene);
     });
   }
 
-  resetLevel() {
-    console.log('Resetting Level...');
-    // 4. FIX: Instead of manual cleanup, we restart the scene.
-    // This wipes the physics world and memory cleanly.
+  // Resets the level
+  resetLevel(targetScene) {
+    console.log('Resetting...');
     this.input.removeAllListeners();
-    this.scene.restart();
-  }
 
-  //helper for switching rooms
-  goToLevel(levelKey) {
-    this.scene.start(levelKey);
+    if (targetScene) {
+        // If we are sent to a specific level (like Level 1),
+        // we wipe the inventory to ensure a fresh start.
+        this.registry.set('inventory', []);
+        this.scene.start(targetScene);
+    } else {
+        // Normal restart (keep inventory if we have it)
+        this.scene.restart();
+    }
   }
 }

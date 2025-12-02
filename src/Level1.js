@@ -46,6 +46,8 @@ export class Level1 extends BaseScene {
     const keyGltf = await this.third.load.gltf('key');
     const key = keyGltf.scene.clone();
 
+    key.name = 'key'; // Added this so we can collect they key
+
     key.scale.set(1, 1, 1);
     key.position.set(8, 9.5, 0);
 
