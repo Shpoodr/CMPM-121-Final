@@ -43,10 +43,18 @@ export class Level1 extends BaseScene {
   // --- SPAWN FUNCTIONS (Refactored to Async) ---
 
   async spawnKey() {
+    // 1. CHECK: Do we already have the key?
+    // The inventory is already loaded in 'init' inside BaseScene
+    if (this.inventory.includes('key')) {
+        console.log("Key already in inventory. Skipping spawn.");
+        return; // Stop here! Don't create the sprite.
+    }
+
+    // ... The rest of your existing code below ...
     const keyGltf = await this.third.load.gltf('key');
     const key = keyGltf.scene.clone();
 
-    key.name = 'key'; // Added this so we can collect they key
+    key.name = 'key'; 
 
     key.scale.set(1, 1, 1);
     key.position.set(8, 9.5, 0);
