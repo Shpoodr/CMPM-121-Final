@@ -15,11 +15,9 @@ export class BaseScene extends Scene3D {
     this.uiElements = [];
 
     this.loadedPosition = null;
-    // [New] To track what we had when the level started
     this.startOfLevelInventory = [];
   }
 
-  // 1. Modified INIT to snapshot inventory
   init(data) {
     this.accessThirdDimension();
 
@@ -31,8 +29,7 @@ export class BaseScene extends Scene3D {
       this.inventory = this.registry.get('inventory') || [];
     }
 
-    // [FIX] Create a backup of the inventory at the start of the level
-    // We will revert to this if the player dies.
+    // Snapshot inventory for "Death" resets
     this.startOfLevelInventory = [...this.inventory];
 
     // B. Recover Position
@@ -58,15 +55,12 @@ export class BaseScene extends Scene3D {
 
     await this.createLevel();
 
+    // Use loaded position if it exists, otherwise use Level specific startPosition
     const startX = this.loadedPosition ? this.loadedPosition.x : (this.startPosition ? this.startPosition.x : 0);
     const startY = this.loadedPosition ? this.loadedPosition.y : (this.startPosition ? this.startPosition.y : 5);
     const startZ = this.loadedPosition ? this.loadedPosition.z : (this.startPosition ? this.startPosition.z : 0);
     
     await this.spawnPlayer(startX, startY, startZ);
-
-    this.time.delayedCall(1000, () => {
-        this.performAutoSave(); 
-    });
   }
 
   async createLevel() {
@@ -108,6 +102,11 @@ export class BaseScene extends Scene3D {
         
         if (dist < 2.5) {
            if (this.scene.key === 'Level1') {
+             // --- [NEW] SAVE TRANSITION TO LEVEL 2 ---
+             // We save explicitly saying "Next time we load, we are in Level 2"
+             // We set position to null so Level 2 uses its default start spawn.
+             this.saveGame('auto', { level: 'Level2', position: null });
+             
              this.scene.start('Level2'); 
            } 
            else {
@@ -165,10 +164,8 @@ export class BaseScene extends Scene3D {
     this.registry.set('inventory', this.inventory);
     this.updateInventoryUI();
     
-    // Auto-save when picking up important items
-    // NOTE: This updates the 'auto' save slot. 
-    // If you reload the page, you WILL have the key.
-    // However, the "Death" logic below handles the in-game reset correctly.
+    // --- [EXISTING] SAVE ON KEY GRAB ---
+    // This saves the current level and position immediately.
     this.performAutoSave();
     this.showMessage("Progress Saved!");
   }
@@ -178,7 +175,7 @@ export class BaseScene extends Scene3D {
       fontSize: '20px', color: '#ffffff', backgroundColor: '#000000aa',
     });
     this.inventoryText.setScrollFactor(0);
-    this.add.text(20, 50, '[K] Save | [L] Load', { fontSize: '16px', color: '#cccccc' }).setScrollFactor(0);
+    this.add.text(20, 50, '[K] Save | [L] Load | [O] Load Auto-Save', { fontSize: '16px', color: '#cccccc' }).setScrollFactor(0);
   }
 
   updateInventoryUI() {
@@ -209,7 +206,6 @@ export class BaseScene extends Scene3D {
     });
   }
 
-  // 2. Modified Reset Level to handle inventory rollback
   resetLevel(targetScene) {
     console.log('Resetting Game...');
     this.input.removeAllListeners();
@@ -218,22 +214,12 @@ export class BaseScene extends Scene3D {
     this.uiElements = [];
 
     if (targetScene) {
-        // [FULL GAME RESET - Win]
         this.registry.set('inventory', []);
         this.scene.start(targetScene, { inventory: [], position: null });
     } else {
-        // [LEVEL RESTART - Death]
-        // Reset inventory to the state it was in when the level STARTED.
         if (this.startOfLevelInventory) {
-            console.log("Reverting Inventory to:", this.startOfLevelInventory);
-            
-            // 1. Reset local array
             this.inventory = [...this.startOfLevelInventory];
-            
-            // 2. Reset Phaser Registry (Global State)
             this.registry.set('inventory', this.inventory);
-            
-            // 3. Restart Scene with the CLEAN inventory
             this.scene.restart({ inventory: this.inventory });
         } else {
             this.scene.restart();
@@ -258,7 +244,9 @@ export class BaseScene extends Scene3D {
       this.saveGame('auto');
   }
 
-  saveGame(slotName) {
+  // --- [UPDATED] SAVE GAME WITH OVERRIDES ---
+  // Added 'overrides' parameter to allow saving specific states (like changing level name)
+  saveGame(slotName, overrides = {}) {
       if (!this.player || !this.player.object) return;
 
       const data = {
@@ -268,8 +256,10 @@ export class BaseScene extends Scene3D {
               x: this.player.object.position.x,
               y: this.player.object.position.y,
               z: this.player.object.position.z
-          }
+          },
+          ...overrides // Merge custom data (like forcing level: 'Level2')
       };
+      
       saveManager.save(slotName, data);
       console.log(`Saved to ${slotName}`, data);
   }
