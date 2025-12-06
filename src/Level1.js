@@ -92,7 +92,7 @@ export class Level1 extends BaseScene {
 
     // Collision with Floor
     this.third.physics.add.collider(this.helper, this.floor, () => {
-      this.displayEndScreen('GAME OVER', '#ff0000');
+      this.displayEndScreen('game_over', '#ff0000');
     });
   }
 
