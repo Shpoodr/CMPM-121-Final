@@ -25,7 +25,8 @@ export class Level1 extends BaseScene {
   }
 
   async createLevel() {
-    const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    
+    const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     this.assetPrefix = isDark ? 'dark-' : '';
 
     console.log(`[Level1] Theme detected: ${isDark ? 'Dark' : 'Light'}`);
