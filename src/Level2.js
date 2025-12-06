@@ -9,10 +9,15 @@ export class Level2 extends BaseScene {
   preload() {
     super.preload();
 
+    //light mode assets
     this.third.load.preload('small', 'assets/small-platform.glb');
     this.third.load.preload('flag', 'assets/flag.glb');
     this.third.load.preload('platform', 'assets/platform.glb');
-    this.third.load.preload('key', 'assets/key.glb');
+
+    //dark mode assets
+    this.third.load.preload('dark-small', 'assets/dark-small.glb');
+    this.third.load.preload('dark-flag', 'assets/dark-flag.glb');
+    this.third.load.preload('dark-platform', 'assets/dark-platform.glb');
   }
 
   // 2. NEW: Async Create allows us to wait for objects to exist before moving on
