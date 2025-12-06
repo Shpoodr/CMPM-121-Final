@@ -34,17 +34,29 @@ export class BaseScene extends Scene3D {
   switchLanguage(lang) {
     if (this.currentLanguage === lang) return;
     console.log(`Switching language to: ${lang}`);
+    
     this.currentLanguage = lang;
-
+    
     // Restarts the scene to refresh all UI and text directions completely
+    this.registry.set('language', lang);
+
     this.scene.restart({
       inventory: this.inventory,
       position: this.player && this.player.object ? this.player.object.position : null,
+      language: lang
     });
   }
 
   init(data) {
     this.accessThirdDimension();
+
+    if (data && data.language) {
+        this.currentLanguage = data.language;
+    } else {
+        this.currentLanguage = this.registry.get('language') || 'en';
+    }
+    // Sync registry
+    this.registry.set('language', this.currentLanguage);
 
     // A. Recover Inventory
     if (data && data.inventory) {
@@ -153,7 +165,10 @@ export class BaseScene extends Scene3D {
             // We set position to null so Level 2 uses its default start spawn.
             this.saveGame('auto', { level: 'Level2', position: null });
 
-            this.scene.start('Level2');
+            this.scene.start('Level2', {
+                inventory: this.inventory,
+                language: this.currentLanguage 
+            });
           } else {
             if (this.inventory.includes('key')) {
               this.displayEndScreen('you_win', '#00ff00', 'Level1');
@@ -294,59 +309,59 @@ export class BaseScene extends Scene3D {
       const style = document.createElement('style');
       style.id = 'mobile-controls-style';
       style.innerHTML = `
-            #joystick-zone {
-                position: fixed;
-                bottom: 50px;
-                left: 50px;
-                width: 120px;
-                height: 120px;
-                z-index: 99999;
+            #joystick-zone { 
+                position: fixed; 
+                bottom: 50px; 
+                left: 50px; 
+                width: 120px; 
+                height: 120px; 
+                z-index: 99999; 
                 touch-action: none; 
-                display: flex;
-                align-items: center;
+                display: flex; 
+                align-items: center; 
                 justify-content: center;
             }
-            .joystick-base {
-                width: 100%;
-                height: 100%;
-                background: rgba(255, 255, 255, 0.2);
-                border: 2px solid rgba(255, 255, 255, 0.5);
-                border-radius: 50%;
-                position: relative;
+            .joystick-base { 
+                width: 100%; 
+                height: 100%; 
+                background: rgba(255, 255, 255, 0.2); 
+                border: 2px solid rgba(255, 255, 255, 0.5); 
+                border-radius: 50%; 
+                position: relative; 
             }
-            .joystick-stick {
-                width: 50px;
-                height: 50px;
-                background: #3178c6;
-                border-radius: 50%;
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                box-shadow: 0 0 10px rgba(0,0,0,0.5);
-                pointer-events: none;
+            .joystick-stick { 
+                width: 50px; 
+                height: 50px; 
+                background: #3178c6; 
+                border-radius: 50%; 
+                position: absolute; 
+                top: 50%; 
+                left: 50%; 
+                transform: translate(-50%, -50%); 
+                box-shadow: 0 0 10px rgba(0,0,0,0.5); 
+                pointer-events: none; 
             }
-            #jump-zone {
-                position: fixed;
-                bottom: 60px;
-                right: 60px;
-                z-index: 99999;
-                touch-action: none;
+            #jump-zone { 
+                position: fixed; 
+                bottom: 60px; 
+                right: 60px; 
+                z-index: 99999; 
+                touch-action: none; 
             }
-            .jump-btn {
-                width: 90px;
-                height: 90px;
-                background-color: #ff6b6b;
-                border: 4px solid #c92a2a;
-                border-radius: 50%;
-                color: white;
-                font-weight: bold;
-                font-size: 18px;
-                box-shadow: 0 6px 0 #c92a2a;
+            .jump-btn { 
+                width: 90px; 
+                height: 90px; 
+                background-color: #ff6b6b; 
+                border: 4px solid #c92a2a; 
+                border-radius: 50%; 
+                color: white; 
+                font-weight: bold; 
+                font-size: 18px; 
+                box-shadow: 0 6px 0 #c92a2a; 
             }
-            .jump-btn:active {
-                box-shadow: 0 0 0 #c92a2a;
-                transform: translateY(6px);
+            .jump-btn:active { 
+                box-shadow: 0 0 0 #c92a2a; 
+                transform: translateY(6px); 
             }
         `;
       document.head.appendChild(style);
@@ -462,14 +477,23 @@ export class BaseScene extends Scene3D {
 
     if (targetScene) {
       this.registry.set('inventory', []);
-      this.scene.start(targetScene, { inventory: [], position: null });
+      this.scene.start(targetScene, { 
+          inventory: [], 
+          position: null,
+          language: this.currentLanguage
+      });
     } else {
       if (this.startOfLevelInventory) {
         this.inventory = [...this.startOfLevelInventory];
         this.registry.set('inventory', this.inventory);
-        this.scene.restart({ inventory: this.inventory });
+        this.scene.restart({ 
+            inventory: this.inventory,
+            language: this.currentLanguage
+        });
       } else {
-        this.scene.restart();
+        this.scene.restart({
+            language: this.currentLanguage
+        });
       }
     }
   }
@@ -497,6 +521,7 @@ export class BaseScene extends Scene3D {
     const data = {
       level: this.scene.key,
       inventory: this.inventory,
+      language: this.currentLanguage,
       position: {
         x: this.player.object.position.x,
         y: this.player.object.position.y,
@@ -516,6 +541,7 @@ export class BaseScene extends Scene3D {
       this.scene.start(data.level, {
         inventory: data.inventory,
         position: data.position,
+        language: data.language
       });
     } else {
       this.showMessage('no_save_found');
