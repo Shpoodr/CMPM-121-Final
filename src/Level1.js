@@ -1,11 +1,12 @@
 import { BaseScene } from './BaseScene';
+import { THREE } from '@enable3d/phaser-extension';
 
 export class Level1 extends BaseScene {
   constructor() {
     super('Level1');
+    this.assetPrefix = '';
   }
 
-  // 1. NEW: Preload assets to ensure they are cached for fast reloading
   preload() {
     super.preload();
 
@@ -23,13 +24,27 @@ export class Level1 extends BaseScene {
 
   }
 
-  // 2. NEW: Async Create allows us to wait for objects to exist before moving on
   async createLevel() {
-    //start with environment setup
-    this.warpSpeed('-ground', '-orbitControls');
-    this.player = super.player;
+    const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    this.assetPrefix = isDark ? 'dark-' : '';
 
-    //define player start position for base scene
+    console.log(`[Level1] Theme detected: ${isDark ? 'Dark' : 'Light'}`);
+    console.log(`[Level1] Using asset prefix: '${this.assetPrefix}'`);
+
+    const warpParams = ['-ground', '-orbitControls'];
+    if (isDark) {
+      warpParams.push('-sky');
+    }
+    const { lights } = await this.warpSpeed(...warpParams);
+
+    if (isDark) {
+      this.third.scene.background = new THREE.Color(0x152633);
+      lights.hemisphereLight.intensity = 0.1;
+      lights.ambientLight.intensity = 0.1;
+      lights.directionalLight.intensity = 0.1;
+    }
+
+    this.player = super.player;
     this.startPosition = { x: 11, y: 3, z: 0 };
 
     //custom kill Floor
@@ -51,19 +66,15 @@ export class Level1 extends BaseScene {
   // --- SPAWN FUNCTIONS (Refactored to Async) ---
 
   async spawnKey() {
-    // 1. CHECK: Do we already have the key?
-    // The inventory is already loaded in 'init' inside BaseScene
     if (this.inventory.includes('key')) {
       console.log('Key already in inventory. Skipping spawn.');
-      return; // Stop here! Don't create the sprite.
+      return; 
     }
 
-    // ... The rest of your existing code below ...
-    const keyGltf = await this.third.load.gltf('key');
+    const keyGltf = await this.third.load.gltf(`key`);
     const key = keyGltf.scene.clone();
 
-    key.name = 'key';
-
+    key.name = 'key'; 
     key.scale.set(1, 1, 1);
     key.position.set(8, 9.5, 0);
 
@@ -81,7 +92,7 @@ export class Level1 extends BaseScene {
   }
 
   async spawnCube() {
-    const gltf = await this.third.load.gltf('cube');
+    const gltf = await this.third.load.gltf(`${this.assetPrefix}cube`);
     const helper = gltf.scene.clone();
 
     helper.scale.set(1, 1, 1);
@@ -98,15 +109,13 @@ export class Level1 extends BaseScene {
 
     this.helper = helper;
 
-    // Collision with Floor
     this.third.physics.add.collider(this.helper, this.floor, () => {
       this.displayEndScreen('game_over', '#ff0000');
     });
   }
 
   async loadStaticLevel() {
-    // Flag
-    const flagGltf = await this.third.load.gltf('flag');
+    const flagGltf = await this.third.load.gltf(`${this.assetPrefix}flag`);
     this.flag = flagGltf.scene.clone();
     this.flag.scale.set(1, 1, 1);
     this.flag.position.set(-12, 5.8, 0);
@@ -119,10 +128,8 @@ export class Level1 extends BaseScene {
       mass: 0,
     });
 
-    // Platforms
-    // Helper to spawn individual platforms
     const spawnPlat = async (x) => {
-      const platGltf = await this.third.load.gltf('platform');
+      const platGltf = await this.third.load.gltf(`${this.assetPrefix}platform`);
       const p = platGltf.scene.clone();
       p.scale.set(1, 1, 1);
       p.position.set(x, 1, 0);

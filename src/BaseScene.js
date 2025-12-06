@@ -77,6 +77,25 @@ export class BaseScene extends Scene3D {
       this.loadedPosition = null;
       console.log(' [System] STARTING FRESH (Default Spawn)');
     }
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    // Define a listener function
+    const handleThemeChange = (e) => {
+      const newColorScheme = e.matches ? 'dark' : 'light';
+      console.log(`Theme changed to ${newColorScheme}`);
+      
+      // Optional: Restart scene to refresh UI colors
+      this.scene.restart();
+    };
+
+    // Add the listener
+    mediaQuery.addEventListener('change', handleThemeChange);
+
+    // Cleanup listener when scene shuts down to prevent errors
+    this.events.on('shutdown', () => {
+        mediaQuery.removeEventListener('change', handleThemeChange);
+    });
   }
 
   preload() {

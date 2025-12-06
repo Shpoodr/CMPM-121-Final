@@ -5,7 +5,6 @@ export class Level2 extends BaseScene {
     super('Level2');
   }
 
-  // 1. NEW: Preload assets to ensure they are cached for fast reloading
   preload() {
     super.preload();
 
