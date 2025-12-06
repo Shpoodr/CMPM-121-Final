@@ -56,3 +56,33 @@ Conclusive Ending: We implemented a clear displayEndScreen method. Meeting win c
 ### Reflection
 
 We significantly refactored our plan to prioritize the DRY principle. Instead of duplicating logic, we moved player movement, UI, and input handling into a parent BaseScene class, leaving child scenes (Level1, Level2) responsible only for asset placement. We also applied the Rule of 3 by creating helper functions like spawnPlat to generate level geometry programmatically rather than hard-coding coordinates.
+
+## Devlog Entry - [12/5/2025]
+
+## Selected requirements
+
+The requirements that we chose to satisfy are the save system which we chose because it just seemed like an easy addition to the project and one that made sense. Next, we chose to add the visual themes because again it looked like an easy addition to the game and an important one due to complications that may arise if this wasn’t implemented. The next thing we chose to add was touch screen capabilities because it seemed easy and having this game on mobile sounded fun. The last thing we decided to add was the 3 different languages to the game because different language support is an important thing to have in any game. 
+
+### How We Satisfied The Software Requirements
+
+Save System: To satisfy data persistence requirements, we implemented a modular SaveManager utilizing localStorage to store serialized game states in multiple slots (e.g., 'slot1', 'auto'). We mapped manual saves to
+specific keys and integrated an auto-save system that triggers during inventory updates and level transitions. This ensures the player's level, 3D position, and inventory are preserved against accidental closure.
+
+Visual Themes: To satisfy the requirement for light and dark modes, we utilized the browser's matchMedia API to detect system preferences and synchronize the game's visual style. We deeply integrated this into BaseScene.js
+to dynamically adjust Three.js rendering properties, instantly toggling the 3D background and fog between a dark charcoal and a bright daylight setting. This ensures the game world itself adapts to user accessibility 
+settings, rather than merely changing the HTML overlay.
+
+Touch Screen Capabilities: For touchscreen support, we engineered a mobile control scheme that automatically injects a virtual joystick and jump button into the DOM upon detecting a mobile user agent. These controls map 
+standard touch events to game input vectors for fluid movement. Additionally, we adapted the interaction system to use Phaser’s pointer events, allowing users to tap directly on 3D objects to trigger raycasting and item 
+collection.
+
+3 Different Languages: We implemented internationalization for English, Chinese, and Arabic by decoupling text into a centralized locales.js dictionary, accessed via a runtime helper function. Players can switch languages 
+instantly via keyboard shortcuts, which reload the scene to refresh UI elements. For Arabic, we programmatically adjusted text origin vectors and screen coordinates to ensure correct Right-to-Left (RTL) layout mirroring.
+
+### Reflection 
+
+The thinking for the game hasn’t changed a whole lot for this build, at least for the jump from F2 to F3 since most of the changes didn’t require a lot of refactoring. The biggest thing for us was making the game better on 
+mobile. Since F2 required us to make the game a little more modular and broken up into a base scene and then all the levels we wanted to add we pretty much went with the same approach for this build as well. 
+
+
+
