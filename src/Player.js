@@ -38,16 +38,24 @@ export class Player {
     if (this.keys.a.isDown) x = -speed;
     if (this.keys.d.isDown) x = speed;
 
+    //joystick check
+    if (this.scene.inputs) {
+      // Only apply if the joystick is being moved
+      if (this.scene.inputs.y !== 0) z = this.scene.inputs.y * speed;
+      if (this.scene.inputs.x !== 0) x = this.scene.inputs.x * speed;
+    }
+
     // Applies velocity (keeping the current Y velocity for gravity)
     this.object.body.setVelocity(x, currentVelocity.y, z);
 
     const onGround = Math.abs(currentVelocity.y) < 0.1;
 
     // Checks if Space was just pressed
-    const jumpPressed = Phaser.Input.Keyboard.JustDown(this.keys.space);
+    const jumpPressed = Phaser.Input.Keyboard.JustDown(this.keys.space) || this.scene.inputs.jump;
 
     if (jumpPressed && onGround) {
       this.object.body.applyForceY(jumpForce);
+      if (this.scene.inputs) this.scene.inputs.jump = false;
     }
   }
 }

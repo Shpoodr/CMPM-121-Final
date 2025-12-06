@@ -26,7 +26,7 @@ export default class SaveManager {
 
   /**
    * Loads game state from a specific slot.
-   * @param {string} slot 
+   * @param {string} slot
    * @returns {object|null} The game state or null if not found.
    */
   load(slot) {

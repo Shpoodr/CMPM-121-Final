@@ -12,13 +12,13 @@ export class Level2 extends BaseScene {
     this.third.load.preload('small', 'assets/small-platform.glb');
     this.third.load.preload('flag', 'assets/flag.glb');
     this.third.load.preload('platform', 'assets/platform.glb');
-    this.third.load.preload('key', 'assets/key.glb')
+    this.third.load.preload('key', 'assets/key.glb');
   }
 
   // 2. NEW: Async Create allows us to wait for objects to exist before moving on
   async createLevel() {
     //start with environment setup
-    this.warpSpeed('-ground');
+    this.warpSpeed('-ground', '-orbitControls');
 
     //define player start position for base scene
     this.startPosition = { x: 11, y: 3, z: 0 };
@@ -86,7 +86,7 @@ export class Level2 extends BaseScene {
       });
     };
 
-    await spawnSmall(0)
+    await spawnSmall(0);
     await spawnPlat(9);
     await spawnPlat(-9);
   }

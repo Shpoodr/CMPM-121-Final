@@ -12,14 +12,14 @@ export class Level1 extends BaseScene {
     this.third.load.preload('cube', 'assets/cube.glb');
     this.third.load.preload('flag', 'assets/flag.glb');
     this.third.load.preload('platform', 'assets/platform.glb');
-    this.third.load.preload('key', 'assets/key.glb')
+    this.third.load.preload('key', 'assets/key.glb');
   }
 
   // 2. NEW: Async Create allows us to wait for objects to exist before moving on
   async createLevel() {
     //start with environment setup
-    this.warpSpeed('-ground');
-    this.player = super.player
+    this.warpSpeed('-ground', '-orbitControls');
+    this.player = super.player;
 
     //define player start position for base scene
     this.startPosition = { x: 11, y: 3, z: 0 };
@@ -46,15 +46,15 @@ export class Level1 extends BaseScene {
     // 1. CHECK: Do we already have the key?
     // The inventory is already loaded in 'init' inside BaseScene
     if (this.inventory.includes('key')) {
-        console.log("Key already in inventory. Skipping spawn.");
-        return; // Stop here! Don't create the sprite.
+      console.log('Key already in inventory. Skipping spawn.');
+      return; // Stop here! Don't create the sprite.
     }
 
     // ... The rest of your existing code below ...
     const keyGltf = await this.third.load.gltf('key');
     const key = keyGltf.scene.clone();
 
-    key.name = 'key'; 
+    key.name = 'key';
 
     key.scale.set(1, 1, 1);
     key.position.set(8, 9.5, 0);
@@ -68,8 +68,8 @@ export class Level1 extends BaseScene {
       mass: 0,
     });
 
-    key.userData = {isInteractable: true}
-    this.key = key
+    key.userData = { isInteractable: true };
+    this.key = key;
   }
 
   async spawnCube() {
